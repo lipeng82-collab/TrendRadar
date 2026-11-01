@@ -213,7 +213,7 @@ class NewsAnalyzer:
 
         self.request_interval = self.ctx.config["REQUEST_INTERVAL"]
         self.report_mode = self.ctx.config["REPORT_MODE"]
-        self.frequency_file = None
+        self.frequency_file = self.ctx.config.get("FILTER", {}).get("FREQUENCY_FILE")
         self.filter_method = None  # None=使用全局配置 ctx.filter_method
         self.interests_file = None  # None=使用全局配置 ai_filter.interests_file
         self.rank_threshold = self.ctx.rank_threshold
@@ -1560,7 +1560,7 @@ class NewsAnalyzer:
         mode_strategy = self._get_mode_strategy()
 
         # 使用 schedule 决定的 frequency_file 覆盖默认值
-        self.frequency_file = schedule.frequency_file
+        self.frequency_file = schedule.frequency_file or self.ctx.config.get("FILTER", {}).get("FREQUENCY_FILE")
 
         # 使用 schedule 决定的筛选策略覆盖默认值
         self.filter_method = schedule.filter_method or self.ctx.filter_method

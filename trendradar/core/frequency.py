@@ -271,7 +271,7 @@ def matches_word_groups(
 
     # 全局过滤检查（优先级最高）
     if global_filters:
-        if any(global_word.lower() in title_lower for global_word in global_filters):
+        if any(_word_matches(global_word, title_lower) for global_word in global_filters):
             return False
 
     # 如果没有配置词组，则匹配所有标题（支持显示全部新闻）
