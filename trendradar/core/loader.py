@@ -356,6 +356,7 @@ def _load_filter_config(config_data: Dict) -> Dict:
 
     return {
         "METHOD": method,  # "keyword" | "ai"
+        "FREQUENCY_FILE": filter_cfg.get("frequency_file"),
         "PRIORITY_SORT_ENABLED": filter_cfg.get("priority_sort_enabled", False),  # AI 模式标签优先级排序开关
     }
 
