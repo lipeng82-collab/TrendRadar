@@ -1,0 +1,154 @@
+[
+  {
+    "id": "positive-1",
+    "title": "欧盟一项调查的新进展",
+    "body": "欧洲监管者在2026年11月6日公布对TikTok的初步认定，认为持续重复推荐同类负面内容可能伤害脆弱成年人和未成年人。观看时长可能与明确表达的偏好冲突。初步调查尚非最终处罚，平台有权抗辩。",
+    "url": "https://digital-strategy.ec.europa.eu/en/news/commission-preliminarily-finds-tiktoks-you-feed-breach-digital-services-act-harmful-rabbit-holes",
+    "published": "2026-11-06",
+    "expected_relevant": true,
+    "expected_core": "注意力",
+    "fixture_type": "paraphrase of official event; not fetched fulltext"
+  },
+  {
+    "id": "positive-2",
+    "title": "他只是多停了一会儿",
+    "body": "一项合成实验把停留时长与主动选择分开记录，发现人们可能因为困惑而观看，推荐系统却把这种行为当作偏好，商业激励进一步放大重复曝光。样本有限，因果机制待验证。",
+    "url": "https://example.org/positive/2",
+    "published": "",
+    "expected_relevant": true,
+    "expected_core": "注意力",
+    "fixture_type": "synthetic"
+  },
+  {
+    "id": "positive-3",
+    "title": "大家都点头的时候",
+    "body": "合成组织实验观察到群体先表态会改变个体的证据权重，会议的顺序影响认知更新；预先独立记录意见有助于比较。只能作机制研究，不能宣称普遍有效。",
+    "url": "https://example.org/positive/3",
+    "published": "",
+    "expected_relevant": true,
+    "expected_core": "认知",
+    "fixture_type": "synthetic"
+  },
+  {
+    "id": "positive-4",
+    "title": "答得快就学会了吗",
+    "body": "合成课堂实验中，学生借助自动回答工具完成练习较快，但无辅助迁移测试表现不同。要区分短时任务完成与长期技能形成，随机分配与基础水平仍需核对。",
+    "url": "https://example.org/positive/4",
+    "published": "",
+    "expected_relevant": true,
+    "expected_core": "认知",
+    "fixture_type": "synthetic"
+  },
+  {
+    "id": "positive-5",
+    "title": "房子还在，账却变了",
+    "body": "合成家庭账本里不动产估值未变，贷款重定价与收入时点却改变现金流安全垫。财富资产要比较流动性、杠杆、利率与风险承担，不能只看名义总额。",
+    "url": "https://example.org/positive/5",
+    "published": "",
+    "expected_relevant": true,
+    "expected_core": "财富资产",
+    "fixture_type": "synthetic"
+  },
+  {
+    "id": "positive-6",
+    "title": "银行公布一份新报告",
+    "body": "合成研究报告把存款流动和资产久期错配联系起来。利率变动造成账面波动，集中赎回把可持有到期的损失转成实际流动性压力。须核对样本、会计口径和反例。",
+    "url": "https://example.org/positive/6",
+    "published": "",
+    "expected_relevant": true,
+    "expected_core": "财富资产",
+    "fixture_type": "synthetic"
+  },
+  {
+    "id": "positive-7",
+    "title": "给孩子的钱换个放法",
+    "body": "合成家庭教学记录比较固定零花钱与有条件奖励，研究儿童如何理解预算约束、机会成本、复利与损失。仅为财商教育线索，不虚构教学成效。",
+    "url": "https://example.org/positive/7",
+    "published": "",
+    "expected_relevant": true,
+    "expected_core": "财商教育",
+    "fixture_type": "synthetic"
+  },
+  {
+    "id": "positive-8",
+    "title": "一次购物前的练习",
+    "body": "合成课堂要求学生比较分期总价、手续费和提前还款条款。财商教育涉及比较选择权和支付责任，避免只教名义利率而忽略实际成本。",
+    "url": "https://example.org/positive/8",
+    "published": "",
+    "expected_relevant": true,
+    "expected_core": "财商教育",
+    "fixture_type": "synthetic"
+  },
+  {
+    "id": "negative-1",
+    "title": "财富资产注意力认知财商教育大礼包",
+    "body": "这是一则营销广告，反复堆砌四类名词，实际只提供折扣码，没有具体实验、研究结果或可查的机制证据。",
+    "url": "https://example.org/negative/1",
+    "expected_relevant": false,
+    "expected_core": "无",
+    "fixture_type": "synthetic"
+  },
+  {
+    "id": "negative-2",
+    "title": "谁拿了冠军",
+    "body": "这是一则合成地方体育比赛比分播报，只列队伍和结果，没有认知、注意力或经济行为研究内容。",
+    "url": "https://example.org/negative/2",
+    "expected_relevant": false,
+    "expected_core": "无",
+    "fixture_type": "synthetic"
+  },
+  {
+    "id": "negative-3",
+    "title": "今晚的明星穿搭",
+    "body": "合成娱乐花边描述服装颜色与观众情绪，没有支付机制、消费者决策或可追溯研究证据。",
+    "url": "https://example.org/negative/3",
+    "expected_relevant": false,
+    "expected_core": "无",
+    "fixture_type": "synthetic"
+  },
+  {
+    "id": "negative-4",
+    "title": "AI新机发布",
+    "body": "合成产品快讯只列外观与宣传口号，没有定价证据、使用结果、成本约束或学习机制。",
+    "url": "https://example.org/negative/4",
+    "expected_relevant": false,
+    "expected_core": "无",
+    "fixture_type": "synthetic"
+  },
+  {
+    "id": "negative-5",
+    "title": "财富传奇内幕",
+    "body": "匿名合成传闻声称某人获得暴利，只提供无法核对的聊天片段，不具备公开来源或可解释证据。",
+    "url": "https://example.org/negative/5",
+    "expected_relevant": false,
+    "expected_core": "无",
+    "fixture_type": "synthetic"
+  },
+  {
+    "id": "negative-6",
+    "title": "这道菜更香了",
+    "body": "合成菜谱介绍调味和烹饪步骤，不讨论经营、注意力、认知实验或财商教育。",
+    "url": "https://example.org/negative/6",
+    "expected_relevant": false,
+    "expected_core": "无",
+    "fixture_type": "synthetic"
+  },
+  {
+    "id": "negative-7",
+    "title": "天气变凉了",
+    "body": "合成天气预告只说明次日温度与着装提醒，没有资产风险或行为机制。",
+    "url": "https://example.org/negative/7",
+    "expected_relevant": false,
+    "expected_core": "无",
+    "fixture_type": "synthetic"
+  },
+  {
+    "id": "negative-8",
+    "title": "财商教育投资稳赚",
+    "body": "合成营销传单承诺投资稳赚并要求转账，没有可验证案例、风险揭示或教学研究。",
+    "url": "https://example.org/negative/8",
+    "expected_relevant": false,
+    "expected_core": "无",
+    "fixture_type": "synthetic"
+  }
+]

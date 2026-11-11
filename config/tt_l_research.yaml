@@ -1,0 +1,54 @@
+# Personal public-source pipeline. Does not read institutional stores or S3.
+profile: personal
+http_timeout: 15
+http_interval_seconds: 1.0
+model_interval_seconds: 2.0
+chunk_chars: 10000
+max_items_per_run: 90
+max_research_per_run: 3
+research_threshold: 0.65
+min_value_score: 80
+min_novelty_score: 0.65
+research_links_per_query: 5
+research_documents_per_query: 2
+research_max_chars: 95000
+max_push_per_day: 3
+search_request_usd_ceiling: 0.01  # Applies only when BRAVE_SEARCH_API_KEY is supplied.
+budget:
+  daily_usd: 2.0
+  daily_tokens: 220000
+  daily_calls: 55
+  # Conservative guardrails, NOT a statement of current provider prices.
+  # Set ceilings >= actual chosen model price; token and call caps apply too.
+  input_usd_per_million_ceiling: 5.0
+  output_usd_per_million_ceiling: 20.0
+sources:
+  - id: ec-digital
+    kind: index
+    pages:
+      - https://digital-strategy.ec.europa.eu/en/news
+      - https://digital-strategy.ec.europa.eu/en/news?page=1
+      - https://digital-strategy.ec.europa.eu/en/news?page=2
+    link_pattern: '^https://digital-strategy\.ec\.europa\.eu/en/news/[^/?]+$'
+  - id: bis-research
+    kind: rss
+    url: https://www.bis.org/doclist/bis_fsi_publs.rss
+  - id: bis-press
+    kind: rss
+    url: https://www.bis.org/doclist/all_pressrels.rss
+  - id: ecb-press
+    kind: rss
+    url: https://www.ecb.europa.eu/rss/press.html
+  - id: ecb-publications
+    kind: rss
+    url: https://www.ecb.europa.eu/rss/pub.html
+  - id: nature
+    kind: rss
+    url: https://www.nature.com/nature.rss
+  - id: oecd-news
+    kind: index
+    url: https://www.oecd.org/en/about/newsroom.html
+    link_pattern: '^https://www\.oecd\.org/en/(about/news|publications)/.+\.html$'
+  - id: ftc-press
+    kind: rss
+    url: https://www.ftc.gov/feeds/press-release.xml
