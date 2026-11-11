@@ -16,6 +16,7 @@ from tt_l.research.model import Model, chunks, classify, validate_research
 from tt_l.research.pipeline import discover, deliver, run
 from tt_l.research.store import Store, now
 from tt_l.research.web import extract, feed_rows, public_url, PublicHTTP
+from tt_l.research.search import search
 
 ROOT = Path(__file__).parents[1]
 
@@ -133,6 +134,16 @@ class ResearchTests(unittest.TestCase):
         self.assertEqual(feed_rows(atom,'source')[0]['published'],'2026-11-06')
         rdf=b'<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/"><item><title>Two</title><link>https://example.org/two</link></item></rdf:RDF>'
         self.assertEqual(len(feed_rows(rdf,'source')),1)
+
+    def test_search_index_time_is_not_publication_date(self):
+        class HTTP:
+            interval=1
+            def get(_,url):
+                return b'{"articles":[{"url":"https://example.org/story","title":"Story","seendate":"20261106T100000Z"}]}','application/json',url
+        with patch.dict(os.environ,{},clear=True):
+            row=search(HTTP(),'test query')[0]
+        self.assertEqual(row['published'],'')
+        self.assertEqual(row['indexed_at'],'20261106T100000Z')
 
     def test_private_and_access_bearing_urls_rejected(self):
         for url in ['https://127.0.0.1/a','https://example.org/a?token=x','file:///a','https://a:b@example.org/a']:

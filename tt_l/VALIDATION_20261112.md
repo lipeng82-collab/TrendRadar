@@ -6,7 +6,7 @@
 
 | 项目 | 实测 | 意义与限制 |
 |---|---|---|
-| 本地回归 | 40项通过，Windows/Python 3.11；目标运行环境 Python 3.12 | 包含原有17项和新增23项；Linux/3.12由PR CI核验 |
+| 本地回归 | 41项通过，Windows/Python 3.11；目标运行环境 Python 3.12 | 包含原有17项和新增24项；Linux/3.12 CI待核验 |
 | 已知漏报网页 | HTTP 200，提取10段，自动解析 Publication 日期为2026-11-06 | 已验证抓取与规范化，不等于分类或深研已实测 |
 | 同一事件官方PDF | 提取2页文本段，段落含page | PDF端点是公告实际指向的 presscorner ip_26_2361 |
 | 权威源探测 | 8入口中6成功、2失败 | EC digital、BIS两源、ECB两源、FTC成功；Nature robots不可用，OECD两个官方页面均请求失败 |
@@ -31,6 +31,10 @@
 ## 自动运行状态
 
 审计两次GitHub API均只返回2026-11-01的两条workflow_dispatch：41292319382、41291718074，均queued；其中较新任务jobs=[]。没有成功定时运行的证据，不能断言7天检查是实际停机唯一原因。
+
+随后用本机已有Git授权读到：仓库Actions enabled=true、allowed_actions=all；crawler.yml状态为disabled_manually。尝试向功能分支dispatch不推送的mode=evaluate，返回HTTP422（disabled workflow），真实模型未执行。为避免旧master恢复自动推送，原本准备先取消长期排队任务、临时启用再恢复禁用；但取消旧任务返回HTTP409“Cannot cancel a workflow run that has not been queued yet”。安全前置条件未满足，未执行启用，最终仍保持原禁用状态。没有删除运行记录，也没有自动合并。
+
+已创建草稿PR： https://github.com/lipeng82-collab/TrendRadar/pull/2 。GitHub连接器写入返回403后，使用本机已有Git Credential Manager授权提交；没有新建授权、读取Secrets值或输出凭据。未观察到PR CI成功运行。
 
 分支取消7天自禁用，把旧Check In的“删除所有运行记录”改成只读诊断，避免清掉持久状态。研究改为每天4次、从同分支artifact恢复SQLite、丢失状态即停止、失败后仍checkpoint保存。首次需显式bootstrap且不通知。公开仓库60天无活动停用和Actions排队仍是平台约束，未部署独立可靠调度器。
 

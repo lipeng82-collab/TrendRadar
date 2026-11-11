@@ -50,7 +50,7 @@ def search(http, query, store=None, settings=None, item_id=''):
             url=canonical_url(r.get('url',''))
             if url:
                 rows.append({'url':url,'title':r.get('title',''),
-                             'published':r.get('seendate',''),
+                             'published':'', 'indexed_at':r.get('seendate',''),
                              'source':backend+' discovery; not evidence'})
         if not rows:
             raise ValueError('search_no_results')
