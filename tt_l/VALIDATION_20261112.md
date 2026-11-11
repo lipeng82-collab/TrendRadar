@@ -36,6 +36,8 @@
 
 已创建草稿PR： https://github.com/lipeng82-collab/TrendRadar/pull/2 。GitHub连接器写入返回403后，使用本机已有Git Credential Manager授权提交；没有新建授权、读取Secrets值或输出凭据。未观察到PR CI成功运行。
 
+后续新增独立验证入口：使用仍处于active的clean-crawler.yml，在功能分支显式选择evaluate。该分支版本已移除删除操作、默认health只读；验证任务不传递通知凭据，不启用crawler。调度已被接受，运行 https://github.com/lipeng82-collab/TrendRadar/actions/runs/43063546595 ，对应07da4beb887763fbbe716240f1e62bcbc1f13b7f；首次读取为queued、jobs=[]，不能据此宣称Linux测试或真实模型已运行。最终状态见本次交付的验证证据JSON。
+
 分支取消7天自禁用，把旧Check In的“删除所有运行记录”改成只读诊断，避免清掉持久状态。研究改为每天4次、从同分支artifact恢复SQLite、丢失状态即停止、失败后仍checkpoint保存。首次需显式bootstrap且不通知。公开仓库60天无活动停用和Actions排队仍是平台约束，未部署独立可靠调度器。
 
 ## 尚待通过的验收
