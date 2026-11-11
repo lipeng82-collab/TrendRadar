@@ -60,3 +60,5 @@ crawler.yml 改为北京时间09:17、15:17、21:17、次日03:17增量运行。
 
 ## 回退
 可在 config/config.yaml 关闭 tt_l_research.enabled，手动运行 mode=legacy；或在 Git 中撤销合并。保留状态库和Secrets。不要运行旧版删除全部 runs 的 Check In。tt_l/topic_cards.py 及旧人工入口保留为历史兼容工具，均不能替代自动全文链路。
+
+独立验证：旧 clean-crawler.yml 仍启用时，可对功能分支显式 dispatch mode=ci 或 evaluate；它不会启用 crawler 定时任务，验证任务不传递任何通知凭据。evaluate预算与同分支研究状态共用，无法恢复已有状态时停止。

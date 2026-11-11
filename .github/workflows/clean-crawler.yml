@@ -1,11 +1,20 @@
-name: Research Health (replaces Check In)
+name: Research Health and Verification
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        options: [health, ci, evaluate]
+        default: health
 permissions:
   contents: read
   actions: read
+concurrency:
+  group: tt-l-personal-research
+  cancel-in-progress: false
 jobs:
   status:
+    if: github.event.inputs.mode == 'health'
     runs-on: ubuntu-latest
     steps:
       - name: Read latest runs without deleting history or state
@@ -15,3 +24,61 @@ jobs:
         run: |
           gh api "repos/$REPO/actions/workflows/crawler.yml/runs?per_page=5" --jq '.workflow_runs[] | {id,event,status,conclusion,created_at,html_url}'
           echo 'Seven-day check-in removed; no deletion of runs or artifacts.' >> "$GITHUB_STEP_SUMMARY"
+  verify:
+    if: github.event.inputs.mode != 'health'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install verification dependencies
+        run: python -m pip install -r tt_l/requirements-research.txt feedparser==6.0.12 pytz boto3 json-repair
+      - name: Run all offline regressions
+        run: python -m unittest discover -s tt_l -p 'test_*.py' -v
+      - name: Record baseline without model calls
+        run: python -m tt_l.research.evaluate --output work/verification/baseline.json
+      - name: Restore persistent budget for explicit model evaluation
+        if: github.event.inputs.mode == 'evaluate'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p work/tt_l_state
+          gh api --paginate "repos/$REPO/actions/artifacts?per_page=100" > work/artifacts.json
+          ARTIFACT=$(jq -rs --arg b "$BRANCH" '[.[].artifacts[] | select(.name=="tt-l-state" and .expired==false and .workflow_run.head_branch==$b)] | sort_by(.created_at) | last | .id // empty' work/artifacts.json)
+          if [ -n "$ARTIFACT" ]; then
+            gh api "repos/$REPO/actions/artifacts/$ARTIFACT/zip" > work/state.zip
+            unzip -o work/state.zip -d work/tt_l_state
+          else
+            # Only the first explicit evaluation may initialize an empty budget.
+            OLD=$(jq -rs --arg b "$BRANCH" '[.[].artifacts[] | select(.name=="tt-l-state" and .workflow_run.head_branch==$b)] | length' work/artifacts.json)
+            if [ "$OLD" != "0" ]; then echo "::error::State expired; restore backup, do not reset budget."; exit 1; fi
+          fi
+      - name: Evaluate actual model without any notification credentials
+        if: github.event.inputs.mode == 'evaluate'
+        env:
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          AI_MODEL: ${{ secrets.AI_MODEL }}
+          AI_API_BASE: ${{ secrets.AI_API_BASE }}
+        run: python -m tt_l.research.evaluate --live --state work/tt_l_state/research.db --output work/verification/live-regression.json
+      - name: Checkpoint evaluation budget
+        if: always() && github.event.inputs.mode == 'evaluate'
+        run: python -c "import sqlite3,pathlib; p=pathlib.Path('work/tt_l_state/research.db'); c=sqlite3.connect(p) if p.exists() else None; c.execute('PRAGMA wal_checkpoint(TRUNCATE)') if c else None; c.close() if c else None"
+      - uses: actions/upload-artifact@v4
+        if: always() && github.event.inputs.mode == 'evaluate'
+        with:
+          name: tt-l-state
+          path: work/tt_l_state/research.db
+          retention-days: 7
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tt-l-verification
+          path: work/verification/
+          retention-days: 30
