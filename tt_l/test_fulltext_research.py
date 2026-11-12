@@ -188,6 +188,9 @@ class ResearchTests(unittest.TestCase):
         first=app_publish(self.root/'research.db',path,out)
         self.assertEqual(first['cards'],1)
         before=(out/'今日选题卡.html').read_bytes()
+        rendered=before.decode('utf-8')
+        for required in ['事实与证据','推荐理由','原创性判断','s0:p1','反证与限制']:
+            self.assertIn(required,rendered)
         second=app_publish(self.root/'research.db',path,out)
         self.assertEqual(second['cards'],0)
         self.assertTrue(second['existing_report_preserved'])
