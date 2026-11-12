@@ -1,0 +1,5 @@
+# Small optional dependency set; upstream's lockfile remains unchanged.
+requests==2.33.0
+PyYAML==6.0.3
+litellm==1.82.6
+pypdf==6.1.3

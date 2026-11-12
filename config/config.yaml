@@ -7,6 +7,13 @@
 # 可视化配置编辑器地址: https://sansan0.github.io/TrendRadar/
 
 
+# Personal automatic research is executed by crawler.yml via python -m tt_l.research.
+# Its input bypasses all legacy title/keyword filters below.
+tt_l_research:
+  enabled: true
+  execution_backend: codex_heartbeat  # User selected in-app delivery; independent API is not provisioned.
+  config_file: config/tt_l_research.yaml
+
 # ===============================================================
 # 1. 基础设置
 # ===============================================================
