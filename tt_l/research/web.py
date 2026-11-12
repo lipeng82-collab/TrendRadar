@@ -11,7 +11,7 @@ from ipaddress import ip_address
 import re
 import socket
 import time
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import urljoin, urlsplit, urlunsplit
 from urllib.robotparser import RobotFileParser
 import xml.etree.ElementTree as ET
 
@@ -32,7 +32,11 @@ def public_url(url, resolve=True):
         addresses = socket.getaddrinfo(host, urlsplit(clean).port or 443, type=socket.SOCK_STREAM)
         if not addresses or any(not ip_address(a[4][0]).is_global for a in addresses):
             raise ValueError('non_public_address')
-    return clean
+    # A dedup key may drop a trailing slash, but the requested path must retain it.
+    # Otherwise sites redirecting /article to /article/ loop indefinitely.
+    original=urlsplit(url.strip())
+    normalized=urlsplit(clean)
+    return urlunsplit((normalized.scheme,normalized.netloc,original.path or '/',normalized.query,''))
 
 
 class PublicHTTP:

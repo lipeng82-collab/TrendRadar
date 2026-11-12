@@ -17,6 +17,8 @@ from tt_l.research.pipeline import discover, deliver, run
 from tt_l.research.store import Store, now
 from tt_l.research.web import extract, feed_rows, public_url, PublicHTTP
 from tt_l.research.search import search
+from tt_l.research.app_bridge import decisions as app_decisions, publish as app_publish, bounded_document
+import subprocess
 
 ROOT = Path(__file__).parents[1]
 
@@ -149,6 +151,71 @@ class ResearchTests(unittest.TestCase):
         for url in ['https://127.0.0.1/a','https://example.org/a?token=x','file:///a','https://a:b@example.org/a']:
             with self.assertRaises(ValueError):
                 public_url(url,resolve=False)
+
+    def test_request_url_preserves_required_trailing_slash(self):
+        self.assertEqual(public_url('https://example.org/article/?utm_source=x',resolve=False),
+                         'https://example.org/article/')
+
+    def app_record(self):
+        key=self.store.add({'url':self.doc['url'],'title':'Synthetic app fixture','source':'test'})
+        self.store.update(key,document=self.doc,classification=judgment())
+        evidence=self.evidence()
+        evidence[0]['url']=self.doc['url']
+        body=self.doc['paragraphs'][0]['text']
+        record={'id':key,'card':card(),'evidence':evidence,
+                'searches':{'support':'success','counter':'success'},
+                'search_trace':[{'role':'support','query':'synthetic support','result_urls':[self.doc['url']]},
+                                {'role':'counter','query':'synthetic counter','result_urls':[evidence[1]['url']]}],
+                'verification':[{'index':0,'verdict':'supported','ref':'s0:p1','quote':body[:20]},
+                                {'index':1,'verdict':'supported','ref':'s1:p1','quote':body[:20]}]}
+        path=self.root/'app-research.json'
+        path.write_text(json.dumps([record],ensure_ascii=False),encoding='utf-8')
+        return path,record
+
+    def test_app_requires_all_paragraphs_before_semantic_decision(self):
+        key=self.store.add({'url':self.doc['url'],'source':'test'})
+        self.store.update(key,document=self.doc)
+        d=dict(judgment(),id=key,sha256=self.doc['sha256'],read_paragraphs=[])
+        path=self.root/'decision.json'
+        path.write_text(json.dumps([d]),encoding='utf-8')
+        with self.assertRaisesRegex(ValueError,'coverage'):
+            app_decisions(self.root/'research.db',path)
+        self.assertIsNone(self.store.db.execute('SELECT classification FROM items').fetchone()[0])
+
+    def test_app_replay_preserves_existing_report_and_never_claims_external_delivery(self):
+        path,record=self.app_record()
+        out=self.root/'report'
+        first=app_publish(self.root/'research.db',path,out)
+        self.assertEqual(first['cards'],1)
+        before=(out/'今日选题卡.html').read_bytes()
+        second=app_publish(self.root/'research.db',path,out)
+        self.assertEqual(second['cards'],0)
+        self.assertTrue(second['existing_report_preserved'])
+        self.assertEqual(before,(out/'今日选题卡.html').read_bytes())
+        data=json.loads((out/'选题卡.json').read_text(encoding='utf-8'))
+        self.assertIsNone(data['model_tokens'])
+        self.assertIn('no external',data['delivery'])
+        self.assertNotIn('text',data['cards'][0]['evidence'][0]['paragraphs'][0])
+
+    def test_app_cannot_relabel_primary_url(self):
+        path,record=self.app_record()
+        record['evidence'][0]['url']='https://example.org/forged-primary'
+        path.write_text(json.dumps([record],ensure_ascii=False),encoding='utf-8')
+        with self.assertRaisesRegex(ValueError,'primary_document'):
+            app_publish(self.root/'research.db',path,self.root/'report')
+
+    def test_app_rejects_invented_verification_quote(self):
+        path,record=self.app_record()
+        record['verification'][0]['quote']='This quotation does not exist in the evidence'
+        path.write_text(json.dumps([record],ensure_ascii=False),encoding='utf-8')
+        result=app_publish(self.root/'research.db',path,self.root/'report')
+        self.assertEqual(result['cards'],0)
+        self.assertIn('深研未完成',self.store.db.execute('SELECT research FROM items').fetchone()[0])
+
+    def test_public_fetch_worker_has_wall_clock_timeout(self):
+        with patch('tt_l.research.app_bridge.subprocess.run',side_effect=subprocess.TimeoutExpired('fetch',45)):
+            with self.assertRaisesRegex(RuntimeError,'wall_clock_timeout'):
+                bounded_document('https://example.org/paper')
 
     def test_dns_private_resolution_rejected(self):
         with patch('socket.getaddrinfo',return_value=[(2,1,6,'',('10.1.2.3',443))]):

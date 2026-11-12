@@ -11,6 +11,7 @@
 # Its input bypasses all legacy title/keyword filters below.
 tt_l_research:
   enabled: true
+  execution_backend: codex_heartbeat  # User selected in-app delivery; independent API is not provisioned.
   config_file: config/tt_l_research.yaml
 
 # ===============================================================

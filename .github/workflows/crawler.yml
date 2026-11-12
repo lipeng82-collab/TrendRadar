@@ -29,7 +29,7 @@ permissions:
 
 jobs:
   research:
-    if: github.event.inputs.mode != 'legacy'
+    if: github.event.inputs.mode != 'legacy' && (github.event_name == 'workflow_dispatch' || vars.TT_L_ENABLE_STANDALONE_API == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
